@@ -6,17 +6,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
-  imports: [
-    HttpModule,
-    CacheModule.register({
-      ttl: 5000, // Cache expiration time in milliseconds
-      max: 10, // Maximum number of items in cache
-      isGlobal: true,
-      store: redisStore,
-      host: '172.17.0.2',
-      port: 6379,
-    }),
-  ],
+  imports: [HttpModule],
   controllers: [AppController],
   providers: [AppService],
 })
