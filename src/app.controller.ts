@@ -33,6 +33,7 @@ export class AppController {
   @Post('trigger')
   async getResponse(@Req() req: Request) {
     const payload = JSON.stringify(req.body);
+    console.dir(payload, { depth: null });
     return payload;
   }
 }
