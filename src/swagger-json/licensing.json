@@ -1,0 +1,1102 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/licensing/orgs/{orgId}/products": {
+      "get": {
+        "operationId": "OrgProductsController_getProductsForOrg",
+        "summary": "Get all products assigned to an organization",
+        "description": "Retrieves all products assigned to an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "reload",
+            "required": false,
+            "in": "query",
+            "description": "Retrieves all products from entitlement-service and includes them in the response if true",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "format": "uuid V4",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/me": {
+      "get": {
+        "operationId": "OrgProductsController_getListOfProductsForLoggedPrincipal",
+        "summary": "Get all products assigned to a principal in an organization",
+        "description": "Retrieves all products an authenticated principal can access in an organization\n\nThis endpoint can be called by Organization Admins/Guests/Authors/Managers and Viewers",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductOfPrincipals"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}": {
+      "get": {
+        "operationId": "OrgProductsController_getProduct",
+        "summary": "Get a product by id within an organization",
+        "description": "Retrieves a product by product id within an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "Product does not exist or is not assigned to the organization"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}/users": {
+      "get": {
+        "operationId": "OrgProductsController_getAllProductUsers",
+        "summary": "Get all users for product within an organization",
+        "description": "Retrieves all users assigned to a product within an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductUsersResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_addUserInProduct",
+        "summary": "Add a user to a product within an organization",
+        "description": "Adds a user to product in an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The email property is optional for principals, but is required for inter-service calls",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUsersAddRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Invalid productId or the product is not assigned to this organization"
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The Organization does not exist or the user is not member of this organization"
+          },
+          "409": {
+            "description": "The user already has access to this product in this organization"
+          },
+          "504": {
+            "description": "Gateway Timeout"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}/services": {
+      "get": {
+        "operationId": "OrgProductsController_getServicePrincipalsOfProduct",
+        "summary": "Get all Service Principals assigned to a product in an organization",
+        "description": "Retrieves all Service Principals assigned to the product in the organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductServicePrincipalResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      },
+      "post": {
+        "operationId": "ServicePrincipalController_addServicePrincipalToProduct",
+        "summary": "Add a Service Principal to a Product within an organization",
+        "description": "Adds a Service Principal to a Product within an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductServicePrincipalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request. The request body and/or parameters are malformed"
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The Organization or Service Principal does not exist or the Service Principal is not a member of the organization"
+          },
+          "409": {
+            "description": "The Service Principal already has access to the product in the organization"
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          },
+          "504": {
+            "description": "Gateway Timeout"
+          }
+        },
+        "tags": [
+          "Service Principals"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}/roles": {
+      "get": {
+        "operationId": "OrgProductsController_getProductRoles",
+        "summary": "Get all roles of a product by product id within an organization",
+        "description": "Retrieves all roles of a product by product id within an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductRoleResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The product does not exist or is not assigned to the organization"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Organization Product Assignments"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}/users/{userId}": {
+      "delete": {
+        "operationId": "UsersController_removeUserFromProduct",
+        "summary": "Remove a user from a product within an organization",
+        "description": "Removes a users association to a product within an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a user",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/users/{userId}/products": {
+      "get": {
+        "operationId": "UsersController_getListOfProducts",
+        "summary": "Get a list of products assigned to a user in an organization",
+        "description": "Retrieves a list of products assigned to a user to in an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a user",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductOfPrincipals"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The Organization does not exist or the user is not member of the organization"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/products/{productId}/services/{sid}": {
+      "delete": {
+        "operationId": "ServicePrincipalController_deleteServicePrincipalFromProduct",
+        "summary": "Remove a Service Principal from a Product within an organization",
+        "description": "Removes a Service Principal from a Product\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a service principal",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request. The request body and/or parameters are malformed"
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The Organization or Service Principal does not exist or the Service Principal is not a member of the organization"
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          },
+          "504": {
+            "description": "Gateway Timeout"
+          }
+        },
+        "tags": [
+          "Service Principals"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/services/{sid}/products": {
+      "get": {
+        "operationId": "ServicePrincipalController_getListOfProductsForServicePrincipal",
+        "summary": "Get a list of products assigned to a service principal in an organization",
+        "description": "Retrieves a list of products assigned to a service principal in an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "sid",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a service principal",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductOfPrincipals"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "404": {
+            "description": "The Organization or Service Principal does not exist or the Service Principal is not a member of the organization"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Service Principals"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/licensing/orgs/{orgId}/services/products": {
+      "get": {
+        "operationId": "ServicePrincipalController_getListOfProductsOfAllServicePrincipalsInOrg",
+        "summary": "Get a list of products assigned to service principals in an organization",
+        "description": "Retrieves a list of products assigned to service principals in an organization\n\nThis endpoint can be called by Super Admins and Organization Admins",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for an organization",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AllOrgProductsOfPrincipals"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Service Principals"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/licensing/products": {
+      "get": {
+        "operationId": "ProductsController_getAllAvailableProducts",
+        "summary": "Get all Products",
+        "description": "Retrieves all Products\n\nThis endpoint can be called by all authenticated tokens",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Products"
+        ]
+      }
+    },
+    "/licensing/products/{productId}/roles": {
+      "post": {
+        "operationId": "ProductsController_addProductRole",
+        "summary": "Create role for product",
+        "description": "Create a role for the provided product",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductRoleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Products"
+        ]
+      },
+      "get": {
+        "operationId": "ProductsController_getProductRoles",
+        "summary": "Get roles for product",
+        "description": "Create the roles for the provided product",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "description": "Unique identifier for a product",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductRoleResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Missing, invalid, or expired token"
+          },
+          "403": {
+            "description": "Forbidden. The requester is not allowed to access this endpoint"
+          },
+          "5XX": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Products"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Licensing Service",
+    "description": "REST APIs<br><br>Internal URL - http://licensing-service.iam.svc.cluster.local/licensing",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string",
+            "readOnly": true
+          },
+          "orgId": {
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "orgId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ProductOfPrincipals": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code"
+        ]
+      },
+      "ProductUsersResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "readOnly": true
+          },
+          "id": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "id"
+        ]
+      },
+      "ProductServicePrincipalResponse": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "sid"
+        ]
+      },
+      "ProductRoleResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "description": {
+            "type": "string",
+            "readOnly": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ProductUsersAddRequest": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "email"
+        ]
+      },
+      "ProductServicePrincipalRequest": {
+        "type": "object",
+        "properties": {
+          "sid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sid"
+        ]
+      },
+      "AllOrgProductsOfPrincipals": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string",
+            "readOnly": true
+          },
+          "sid": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code",
+          "sid"
+        ]
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "code"
+        ]
+      },
+      "ProductRoleRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swagger Aggregator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js"></script>
+</head>
+<body>
+<h1>Swagger Aggregator</h1>
+<select id="swagger-select">
+  <% docs.forEach(function(doc) { %>
+    <option value="<%= doc.url %>"><%= doc.name %></option>
+  <% }); %>
+</select>
+<div id="swagger-ui"></div>
+<script>
+  const swaggerSelect = document.getElementById('swagger-select');
+  const swaggerUi = SwaggerUIBundle({
+    url: swaggerSelect.value,
+    dom_id: '#swagger-ui',
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIStandalonePreset
+    ],
+    layout: "StandaloneLayout"
+  });
+
+  swaggerSelect.addEventListener('change', () => {
+    swaggerUi.initOAuth({ url: swaggerSelect.value });
+  });
+</script>
+</body>
+</html>

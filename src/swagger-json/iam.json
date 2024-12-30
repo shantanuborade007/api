@@ -1,0 +1,469 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/iam/roles/me": {
+      "get": {
+        "operationId": "RolesController_getRolesByToken",
+        "summary": "",
+        "description": "Get Roles from a Bearer Authorization Token",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Returns Unauthorized if the Bearer Token is invalid or expired."
+          },
+          "404": {
+            "description": "Returns Not Found if there are not roles assigned"
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/roles/orgs": {
+      "get": {
+        "operationId": "RolesController_getNonPrivilegedRoles",
+        "summary": "",
+        "description": "Get the non-privileged Roles",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "Returns Unauthorized if the Bearer Token is invalid or expired."
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/roles/{roleId}/permissions": {
+      "put": {
+        "operationId": "RolesController_updatePermissions",
+        "summary": "",
+        "description": "Updates permissions assigned to role",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolePermissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Permission ids provided are not valid."
+          },
+          "401": {
+            "description": "Returns Unauthorized if the Bearer Token is invalid or expired."
+          },
+          "404": {
+            "description": "Role to set permissions for was not found."
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "RolesController_getPermissions",
+        "summary": "",
+        "description": "Gets the permissions assigned to role",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Returns Unauthorized if the Bearer Token is invalid or expired."
+          },
+          "404": {
+            "description": "Role to get permissions for was not found."
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/operators/users/{userId}": {
+      "get": {
+        "operationId": "OperatorsController_getOperator",
+        "summary": "Get user operator details",
+        "description": "Get operator details for the given userId. This will result in a 404 if the user does not exist, or is not an operator",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Operators"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/operators/users": {
+      "get": {
+        "operationId": "OperatorsController_getOperators",
+        "summary": "Get user operator details",
+        "description": "Get details for all operator users",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "If limit is not provided the api will return all the results.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "description": "If offset is not provided or is not a valid number, the api will default to 0.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Operator full name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "required": false,
+            "in": "query",
+            "description": "Operator email",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperatorListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Operators"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/auth/single-tenant/authorization": {
+      "post": {
+        "operationId": "AuthorizationController_authorizeSingleTenant",
+        "summary": "Authorize a single tenant",
+        "description": "The endpoint receives a M2M bearer token as Authorization Header then checks if the user belongs to an org or if the user has a wnc-operator role & the org has a wnc+ license",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizeUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "403": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/auth/operator/authorization": {
+      "post": {
+        "operationId": "AuthorizationController_authorizeOperator",
+        "summary": "Authorize a Windchill operator",
+        "description": "The endpoint receives an inter-service's M2M Token then checks if the user has a wnc-operator role & if the org has a wnc+ license.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthorizeUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "Returns Unauthorized if the M2M Token is invalid or expired."
+          },
+          "403": {
+            "description": "Returns Forbidden if the user is not a WNC Operator or if the user has the rolebut the organization does not have a valid license"
+          }
+        },
+        "tags": [
+          "Authorization"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    },
+    "/iam/principals/me": {
+      "get": {
+        "operationId": "PrincipalController_getOrgPrincipalMe",
+        "summary": "Get principal details",
+        "description": "Get the principal details from a JWT",
+        "parameters": [
+          {
+            "name": "inflated",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgPrincipalResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Returns BadRequest if the user from the token is not a member of the provided org."
+          },
+          "401": {
+            "description": "Returns Unauthorized if the Bearer Token is invalid or expired."
+          },
+          "403": {
+            "description": "Returns Forbidden if the user is not an Admin of the provided org or a Super-Admin"
+          },
+          "500": {
+            "description": "Internal server error occurred"
+          }
+        },
+        "tags": [
+          "Principals"
+        ],
+        "security": [
+          {
+            "Auth": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Identity and Access Management Service",
+    "description": "A service which handles Identity and Access Management for Atlas Service <br><br>Internal URL - http://iam-service.iam.svc.cluster.local/iam",
+    "version": "0.0.1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "Auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RolePermissionRequest": {
+        "type": "object",
+        "properties": {}
+      },
+      "OperatorResponseDto": {
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "givenName": {
+            "type": "string"
+          },
+          "surname": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uid",
+          "email",
+          "displayName",
+          "givenName",
+          "surname"
+        ]
+      },
+      "OperatorListResponseDto": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "rows",
+          "total"
+        ]
+      },
+      "AuthorizeUserDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "orgId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userId",
+          "orgId"
+        ]
+      },
+      "OrgPrincipalResponse": {
+        "type": "object",
+        "properties": {
+          "pid": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "principalName": {
+            "type": "string"
+          },
+          "objectId": {
+            "type": "string"
+          },
+          "orgRole": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "pid",
+          "type",
+          "principalName",
+          "objectId",
+          "orgRole"
+        ]
+      }
+    }
+  }
+}

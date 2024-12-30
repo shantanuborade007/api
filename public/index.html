@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Swagger UI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.7.2/swagger-ui.css">
+</head>
+<body>
+<div>
+  <select id="swagger-select"></select>
+  <div id="swagger-ui"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.7.2/swagger-ui-bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.7.2/swagger-ui-standalone-preset.js"></script>
+<script>
+  function loadSwaggerUI(url) {
+    const ui = SwaggerUIBundle({
+      url: url,
+      dom_id: '#swagger-ui',
+      presets: [SwaggerUIBundle.presets.apis],
+      layout: "BaseLayout",
+    });
+    window.ui = ui;
+  }
+
+  // Populate the dropdown with Swagger docs
+  const docs = ${JSON.stringify(combinedDocs)};
+  const dropdown = document.getElementById('swagger-select');
+  docs.forEach(doc => {
+    const option = document.createElement('option');
+    option.value = doc.url;
+    option.textContent = doc.name;
+    dropdown.appendChild(option);
+  });
+
+  // Load the Swagger UI for the selected doc
+  dropdown.addEventListener('change', (event) => {
+    loadSwaggerUI(event.target.value);
+  });
+
+  // Load the first Swagger doc by default
+  if (docs.length > 0) {
+    loadSwaggerUI(docs[0].url);
+  }
+</script>
+</body>
+</html>
